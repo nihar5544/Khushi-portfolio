@@ -1,9 +1,9 @@
 import { Reveal } from "./Reveal";
 
 const STEPS = [
-  { n: "01", title: "Discover", copy: "Deep dive into business, audience and competitors." },
-  { n: "02", title: "Strategize", copy: "Positioning, messaging and a clear creative direction." },
-  { n: "03", title: "Design", copy: "Identity, social systems and interfaces built to scale." },
+  { n: "01", title: "Discover", copy: "Understand the business, audience and problem." },
+  { n: "02", title: "Strategize", copy: "Find the right direction before designing." },
+  { n: "03", title: "Design", copy: "Turn the direction into a clear visual experience." },
   { n: "04", title: "Deliver", copy: "Files, guidelines and handoff your team can run with." },
 ];
 

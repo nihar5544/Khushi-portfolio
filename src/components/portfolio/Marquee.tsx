@@ -8,13 +8,7 @@ const ITEMS = [
   "DESIGN SYSTEMS",
 ];
 
-export function Marquee({
-  inverted = false,
-  speed = 28,
-}: {
-  inverted?: boolean;
-  speed?: number;
-}) {
+export function Marquee({ inverted = false, speed = 28 }: { inverted?: boolean; speed?: number }) {
   const row = [...ITEMS, ...ITEMS];
   return (
     <div

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/portfolio/Navbar";
 import { Hero } from "@/components/portfolio/Hero";
@@ -11,6 +12,7 @@ import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
 import { Marquee } from "@/components/portfolio/Marquee";
 import { CustomCursor } from "@/components/portfolio/CustomCursor";
+import { cms, cmsReady } from "@/lib/cms";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,17 +37,39 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [cmsData, setCmsData] = useState(cms.getState());
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    cmsReady.then(() => {
+      setReady(true);
+      setCmsData(cms.getState());
+      const unsubscribe = cms.subscribe(() => {
+        setCmsData(cms.getState());
+      });
+      return unsubscribe;
+    });
+  }, []);
+
+  if (!ready) {
+    return (
+      <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
       <CustomCursor />
       <Navbar />
-      <Hero />
-      <About />
-      <Services />
-      <Work />
+      <Hero cms={cmsData.hero} />
+      <About cms={cmsData.about} />
+      <Services cms={cmsData.services} />
+      <Work cms={cmsData.projects} />
       <Marquee inverted speed={36} />
-      <Process />
-      <Testimonials />
+      <Process cms={cmsData.process} />
+      <Testimonials cms={cmsData.testimonials} />
       <Contact />
       <Footer />
       <Toaster />

@@ -11,44 +11,44 @@ type Project = {
 const PROJECTS: Project[] = [
   {
     name: "Picsdrop",
-    tag: "Branding / Social Media",
-    desc: "Brand and social media design for a fast-moving photo-sharing platform.",
+    tag: "Branding / Social Media / Website Design",
+    desc: "Built the visual direction for a photography business platform, from its brand presence and social content to the website experience.",
     url: "https://picsdrop.in",
   },
   {
     name: "Somenu Digital",
-    tag: "Branding / UI",
-    desc: "Brand design and interface work for a digital menu product.",
+    tag: "Branding / Social Media / UI",
+    desc: "Worked across the brand, social media and product interface to create a more consistent experience for a digital POS and menu platform.",
     url: "https://somenu.digital",
   },
   {
     name: "Spark Digishine",
-    tag: "Branding / Social Media",
-    desc: "Brand identity and social content system for a digital marketing studio.",
+    tag: "SOCIAL MEDIA / UI / WEBSITE DESIGN",
+    desc: "Designed digital experiences and social content for a creative technology studio, keeping the work clear, modern and consistent across platforms.",
     url: "https://sparkdigishine.com",
   },
   {
     name: "Fishelly",
-    tag: "UI / Branding",
-    desc: "UI design and branding for a seafood commerce experience.",
+    tag: "UI / SOCIAL MEDIA",
+    desc: "Designed the product experience and social visuals for a fish community platform, making complex features feel simple and approachable.",
     url: "https://fishelly.com",
   },
   {
     name: "Super Squirrels",
     tag: "Branding / Social Media",
-    desc: "Playful brand design and social storytelling for a non-profit initiative.",
+    desc: "Created a playful visual direction across the brand and website, giving the initiative a more recognizable personality.",
     url: "https://supersquirrels.org",
   },
   {
-    name: "Healthy Box JND",
-    tag: "Social Media",
-    desc: "Appetite-first social media design for a healthy meal-box brand.",
+    name: "ORIZA TEAS",
+    tag: "WEBSITE DESIGN / PACKAGING DESIGN",
+    desc: "Worked on the digital and packaging experience for a tea brand, bringing the products, visual identity and online presence together.",
   },
-  {
-    name: "Barifit",
-    tag: "Social Media",
-    desc: "High-energy fitness social media design built for consistency.",
-  },
+  // {
+  //   name: "Barifit",
+  //   tag: "Social Media",
+  //   desc: "High-energy fitness social media design built for consistency.",
+  // },
 ];
 
 export function Work() {
@@ -76,9 +76,7 @@ export function Work() {
           return (
             <Reveal key={p.name} delay={i * 60}>
               <Wrapper
-                {...(p.url
-                  ? { href: p.url, target: "_blank", rel: "noreferrer noopener" }
-                  : {})}
+                {...(p.url ? { href: p.url, target: "_blank", rel: "noreferrer noopener" } : {})}
                 className="group relative block overflow-hidden border-b border-ink/15 py-8 md:py-10"
               >
                 <span className="absolute inset-0 -z-0 translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0" />

@@ -1,0 +1,20 @@
+export const lucideIcons = [
+  { name: "Compass", component: "Compass" },
+  { name: "Fingerprint", component: "Fingerprint" },
+  { name: "Instagram", component: "Instagram" },
+  { name: "LayoutGrid", component: "LayoutGrid" },
+  { name: "Layers", component: "Layers" },
+  { name: "Mail", component: "Mail" },
+  { name: "Linkedin", component: "Linkedin" },
+  { name: "Phone", component: "Phone" },
+  { name: "ArrowUp", component: "ArrowUp" },
+  { name: "ArrowDownRight", component: "ArrowDownRight" },
+  { name: "ArrowUpRight", component: "ArrowUpRight" },
+  { name: "Quote", component: "Quote" },
+  { name: "Eye", component: "Eye" },
+  { name: "Sun", component: "Sun" },
+  { name: "Moon", component: "Moon" },
+].map((item) => ({
+  ...item,
+  component: item.name,
+}));
