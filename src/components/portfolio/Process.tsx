@@ -1,13 +1,25 @@
 import { Reveal } from "./Reveal";
 
-const STEPS = [
+type ProcessStep = {
+  n: string;
+  title: string;
+  copy: string;
+};
+
+type ProcessCMS = {
+  steps?: ProcessStep[];
+};
+
+const DEFAULT_STEPS: ProcessStep[] = [
   { n: "01", title: "Discover", copy: "Understand the business, audience and problem." },
   { n: "02", title: "Strategize", copy: "Find the right direction before designing." },
   { n: "03", title: "Design", copy: "Turn the direction into a clear visual experience." },
   { n: "04", title: "Deliver", copy: "Files, guidelines and handoff your team can run with." },
 ];
 
-export function Process() {
+export function Process({ cms }: { cms?: ProcessCMS }) {
+  const steps = cms?.steps || DEFAULT_STEPS;
+
   return (
     <section className="border-y border-ink/15 bg-secondary py-24 md:py-36">
       <div className="mx-auto max-w-[1400px] px-5 md:px-8">
@@ -19,7 +31,7 @@ export function Process() {
         </Reveal>
 
         <div className="mt-16 grid gap-10 md:grid-cols-4 md:gap-6">
-          {STEPS.map((s, i) => (
+          {steps.map((s, i) => (
             <Reveal key={s.n} delay={i * 120} className="relative">
               <div className="flex items-center gap-4">
                 <span className="grid size-12 shrink-0 place-items-center rounded-full bg-ink text-sm font-bold text-ink-foreground">

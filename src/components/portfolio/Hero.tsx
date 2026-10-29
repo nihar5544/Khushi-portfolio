@@ -9,6 +9,7 @@ type HeroCMS = {
   subtitleLines?: string[];
   ctaText?: string;
   secondaryCtaText?: string;
+  heroImage?: string; // URL to hero portrait image
 };
 
 function renderHtmlLines(lines: string[]) {
@@ -34,62 +35,77 @@ export function Hero({ cms }: { cms?: HeroCMS }) {
   ];
   const ctaText = cms?.ctaText || "View My Work";
   const secondaryCtaText = cms?.secondaryCtaText || "Let's Collaborate";
+  const heroImage = cms?.heroImage || "/hero-portrait.png";
 
   return (
     <section id="top" className="relative overflow-hidden pt-32 pb-0 md:pt-44">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[70vh] glow-top opacity-70" />
 
       <div className="relative mx-auto max-w-[1400px] px-5 md:px-8">
-        <Reveal className="flex flex-wrap items-center gap-3 text-xs font-semibold tracking-[0.25em] uppercase">
-          <span className="size-2 rounded-full bg-primary" />
-          {tag}
-        </Reveal>
-
-        <h1 className="display-xl mt-8 -ml-[0.04em] text-[clamp(3.2rem,12.5vw,11rem)]">
-          {renderHtmlLines(titleLines)}
-        </h1>
-
-        <div className="mt-10 grid gap-8 border-t border-ink/15 pt-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-          <Reveal delay={120}>
-            {subtitleLines.map((line, i) => (
-              <p
-                key={i}
-                className={
-                  i === 0
-                    ? "max-w-xl text-[clamp(1.25rem,2.4vw,2rem)] leading-tight font-medium"
-                    : "mt-3 max-w-lg text-base text-muted-foreground"
-                }
-                dangerouslySetInnerHTML={{ __html: line }}
-              />
-            ))}
-          </Reveal>
-
-          <Reveal delay={220} className="flex flex-wrap gap-3">
-            <a
-              href="#work"
-              className="group inline-flex items-center gap-2 rounded-full bg-ink px-7 py-4 text-sm font-bold tracking-wide text-ink-foreground uppercase transition-all duration-300 hover:-translate-y-1 hover:bg-primary hover:text-primary-foreground"
-            >
-              {ctaText}
-              <ArrowDownRight
-                size={18}
-                className="transition-transform duration-300 group-hover:translate-y-0.5"
-              />
-            </a>
-            <a
-              href="#contact"
-              className="group inline-flex items-center gap-2 rounded-full border-2 border-ink px-7 py-4 text-sm font-bold tracking-wide uppercase transition-all duration-300 hover:-translate-y-1 hover:bg-ink hover:text-ink-foreground"
-            >
-              {secondaryCtaText}
-              <ArrowUpRight
-                size={18}
-                className="transition-transform duration=300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              />
-            </a>
-          </Reveal>
+        {/* Halftone portrait — right side, behind the oversized headline */}
+        <div className="pointer-events-none absolute -top-10 right-5 z-0 hidden w-[44%] max-w-[600px] select-none md:-top-14 md:right-8 md:block">
+          <div className="absolute left-1/2 top-[8%] h-[55%] w-[78%] -translate-x-1/2 rounded-full bg-ink/10 blur-[90px]" />
+          <img
+            src={heroImage}
+            alt="Portrait of Khushi Rawat"
+            draggable={false}
+            className="relative h-auto w-full mix-blend-multiply"
+          />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background via-background/60 to-transparent" />
         </div>
 
-        <div className="mt-16">
-          <Marquee />
+        <div className="relative z-10">
+          <Reveal className="flex flex-wrap items-center gap-3 text-xs font-semibold tracking-[0.25em] uppercase">
+            <span className="size-2 rounded-full bg-primary" />
+            {tag}
+          </Reveal>
+
+          <h1 className="display-xl mt-8 -ml-[0.04em] text-[clamp(3.2rem,12.5vw,11rem)]">
+            {renderHtmlLines(titleLines)}
+          </h1>
+
+          <div className="mt-10 grid gap-8 border-t border-ink/15 pt-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+            <Reveal delay={120}>
+              {subtitleLines.map((line, i) => (
+                <p
+                  key={i}
+                  className={
+                    i === 0
+                      ? "max-w-xl text-[clamp(1.25rem,2.4vw,2rem)] leading-tight font-medium"
+                      : "mt-3 max-w-lg text-base text-muted-foreground"
+                  }
+                  dangerouslySetInnerHTML={{ __html: line }}
+                />
+              ))}
+            </Reveal>
+
+            <Reveal delay={220} className="flex flex-wrap gap-3">
+              <a
+                href="#work"
+                className="group inline-flex items-center gap-2 rounded-full bg-ink px-7 py-4 text-sm font-bold tracking-wide text-ink-foreground uppercase transition-all duration-300 hover:-translate-y-1 hover:bg-primary hover:text-primary-foreground"
+              >
+                {ctaText}
+                <ArrowDownRight
+                  size={18}
+                  className="transition-transform duration-300 group-hover:translate-y-0.5"
+                />
+              </a>
+              <a
+                href="#contact"
+                className="group inline-flex items-center gap-2 rounded-full border-2 border-ink px-7 py-4 text-sm font-bold tracking-wide uppercase transition-all duration-300 hover:-translate-y-1 hover:bg-ink hover:text-ink-foreground"
+              >
+                {secondaryCtaText}
+                <ArrowUpRight
+                  size={18}
+                  className="transition-transform duration=300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                />
+              </a>
+            </Reveal>
+          </div>
+
+          <div className="mt-16">
+            <Marquee />
+          </div>
         </div>
       </div>
     </section>

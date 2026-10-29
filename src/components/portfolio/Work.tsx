@@ -8,7 +8,11 @@ type Project = {
   url?: string;
 };
 
-const PROJECTS: Project[] = [
+type WorkCMS = {
+  projects?: Project[];
+};
+
+const DEFAULT_PROJECTS: Project[] = [
   {
     name: "Picsdrop",
     tag: "Branding / Social Media / Website Design",
@@ -44,14 +48,11 @@ const PROJECTS: Project[] = [
     tag: "WEBSITE DESIGN / PACKAGING DESIGN",
     desc: "Worked on the digital and packaging experience for a tea brand, bringing the products, visual identity and online presence together.",
   },
-  // {
-  //   name: "Barifit",
-  //   tag: "Social Media",
-  //   desc: "High-energy fitness social media design built for consistency.",
-  // },
 ];
 
-export function Work() {
+export function Work({ cms }: { cms?: WorkCMS }) {
+  const projects = cms?.projects || DEFAULT_PROJECTS;
+
   return (
     <section id="work" className="mx-auto max-w-[1400px] px-5 py-24 md:px-8 md:py-36">
       <Reveal className="grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
@@ -71,7 +72,7 @@ export function Work() {
       </Reveal>
 
       <div className="mt-16 border-t border-ink/15">
-        {PROJECTS.map((p, i) => {
+        {projects.map((p, i) => {
           const Wrapper = p.url ? "a" : "div";
           return (
             <Reveal key={p.name} delay={i * 60}>
