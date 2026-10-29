@@ -1,15 +1,23 @@
 /**
  * Supabase Client Configuration
- * Single client instance for the entire application
+ * Single client instance for the entire application.
+ *
+ * Only public configuration belongs in this file. This module is bundled into
+ * the browser, so never reference a Supabase secret/service-role key here or
+ * in any VITE_* environment variable.
  */
 
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
 
-// Environment variables (set in .env.local or via hosting platform)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://xhoecoqqtgymohwialsl.supabase.co";
-const supabaseAnonKey =
-  import.meta.env.VITE_SUPABASE_ANON_KEY || "sb_publishable_jGis2ZkU7asYDhMMtXUnHg_QEL4MdI9";
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    "Missing Supabase environment variables. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment (see .env.example).",
+  );
+}
 
 // Create typed client
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
@@ -24,18 +32,6 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     },
   },
 });
-
-// Admin client (with service role key - ONLY use server-side or in secure admin context)
-// Never expose service role key in client-side code!
-export const createAdminClient = () => {
-  const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
-  return createClient<Database>(supabaseUrl, serviceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-};
 
 // Type exports
 export type PortfolioContent = Database["public"]["Tables"]["portfolio_content"]["Row"];

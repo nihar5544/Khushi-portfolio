@@ -86,13 +86,14 @@ Create `.env.local` (never commit this):
 
 ```env
 # Public - safe for client-side
-VITE_SUPABASE_URL=https://xhoecoqqtgymohwialsl.supabase.co
-VITE_SUPABASE_ANON_KEY=sb_publishable_jGis2ZkU7asYDhMMtXUnHg_QEL4MdI9
-
-# Secret - ONLY for server-side/API routes
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-SUPABASE_JWKS_URL=https://xhoecoqqtgymohwialsl.supabase.co/auth/v1/.well-known/jwks.json
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_publishable_key
 ```
+
+This app only uses the public URL and publishable/anon key. Never put a
+Supabase secret/service-role key in a `VITE_*` variable or in any file that is
+shipped to the browser. If you later add server-only code, keep the secret on
+the server and read it from a non-`VITE_` variable.
 
 ---
 
@@ -283,8 +284,8 @@ VALUES ('test2', '{"test": true}'); -- ERROR
 1. **Environment Variables:**
 
    ```
-   VITE_SUPABASE_URL=https://xhoecoqqtgymohwialsl.supabase.co
-   VITE_SUPABASE_ANON_KEY=sb_publishable_jGis2ZkU7asYDhMMtXUnHg_QEL4MdI9
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_publishable_key
    ```
 
 2. **Build Command:** `npm run build`
@@ -300,8 +301,8 @@ VALUES ('test2', '{"test": true}'); -- ERROR
    - Enable `supabase_realtime` publication for `portfolio_content`
 
 3. **API Settings:**
-   - Verify anon key has `public` role
-   - Service role key kept secret (server-only)
+   - Verify the publishable/anon key is configured
+   - Never expose a secret/service-role key in client code or `VITE_*` variables
 
 ---
 

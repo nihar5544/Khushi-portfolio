@@ -43,10 +43,8 @@ export function Contact({ cms }: ContactProps) {
         },
         {
           headers: {
-            apikey:
-              import.meta.env.VITE_SUPABASE_ANON_KEY ||
-              "sb_publishable_1BJQ8eksQ3KqNrfCPVRZzw_Js546MQK",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || "sb_publishable_1BJQ8eksQ3KqNrfCPVRZzw_Js546MQK"}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
             "Content-Type": "application/json",
           },
         },
