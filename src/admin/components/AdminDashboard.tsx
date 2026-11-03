@@ -95,8 +95,9 @@ function HeroEditor({ content, onChange }: { content: any; onChange: (data: any)
         <textarea
           value={titleLines.join("\n")}
           onChange={(e) => {
-            setTitleLines(e.target.value.split("\n"));
-            onChange({ titleLines, subtitleLines });
+            const nextTitleLines = e.target.value.split("\n");
+            setTitleLines(nextTitleLines);
+            onChange({ titleLines: nextTitleLines, subtitleLines });
           }}
           className="w-full h-[120px] resize-none"
           placeholder="Line 1\nLine 2\nLine 3"
@@ -107,8 +108,9 @@ function HeroEditor({ content, onChange }: { content: any; onChange: (data: any)
         <textarea
           value={subtitleLines.join("\n")}
           onChange={(e) => {
-            setSubtitleLines(e.target.value.split("\n"));
-            onChange({ titleLines, subtitleLines });
+            const nextSubtitleLines = e.target.value.split("\n");
+            setSubtitleLines(nextSubtitleLines);
+            onChange({ titleLines, subtitleLines: nextSubtitleLines });
           }}
           className="w-full h-[80px] resize-none"
           placeholder="Line 1\nLine 2"
@@ -205,63 +207,50 @@ function AboutEditor({ content, onChange }: { content: any; onChange: (data: any
 }
 
 function ServicesEditor({ content, onChange }: { content: any; onChange: (data: any) => void }) {
-  const [items, setItems] = useState(
-    content?.items || [
-      {
-        icon: "Compass",
-        title: "Brand Strategy",
-        copy: "Logos, visual identities, colour systems and brand assets that make a business recognizable.",
-      },
-      {
-        icon: "Fingerprint",
-        title: "Brand Identity & Logo Design",
-        copy: "Logos, type, colour and full identity kits built to last beyond a trend cycle.",
-      },
-      {
-        icon: "Instagram",
-        title: "Social Media Design",
-        copy: "Posts, carousels, stories and content systems that keep brands consistent and engaging.",
-      },
-      {
-        icon: "LayoutGrid",
-        title: "UI/UX Design",
-        copy: "Websites, SaaS products, dashboards and interfaces designed around real user needs.",
-      },
-      {
-        icon: "Layers",
-        title: "Design Systems in Figma & Canva",
-        copy: "Handoff-ready libraries your team can actually run with, solo or at scale.",
-      },
-    ],
-  );
+  const items = getArrayContent(content?.items) ?? [
+    {
+      icon: "Compass",
+      title: "Brand Strategy",
+      copy: "Logos, visual identities, colour systems and brand assets that make a business recognizable.",
+    },
+    {
+      icon: "Fingerprint",
+      title: "Brand Identity & Logo Design",
+      copy: "Logos, type, colour and full identity kits built to last beyond a trend cycle.",
+    },
+    {
+      icon: "Instagram",
+      title: "Social Media Design",
+      copy: "Posts, carousels, stories and content systems that keep brands consistent and engaging.",
+    },
+    {
+      icon: "LayoutGrid",
+      title: "UI/UX Design",
+      copy: "Websites, SaaS products, dashboards and interfaces designed around real user needs.",
+    },
+    {
+      icon: "Layers",
+      title: "Design Systems in Figma & Canva",
+      copy: "Handoff-ready libraries your team can actually run with, solo or at scale.",
+    },
+  ];
 
-  useEffect(() => {
-    if (content?.items) setItems(content.items);
-  }, [content?.items]);
-
-  useEffect(() => {
-    onChange({ items });
-  }, [items]);
+  const updateItems = (nextItems: typeof items) => onChange({ items: nextItems });
 
   const moveItem = (index: number, direction: number) => {
-    setItems((prev) => {
-      const newItems = [...prev];
-      const newIndex = index + direction;
-      if (newIndex < 0 || newIndex >= newItems.length) return prev;
-      [newItems[index], newItems[newIndex]] = [newItems[newIndex], newItems[index]];
-      return newItems;
-    });
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= items.length) return;
+    const nextItems = [...items];
+    [nextItems[index], nextItems[newIndex]] = [nextItems[newIndex], nextItems[index]];
+    updateItems(nextItems);
   };
 
   const removeItem = (index: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
+    updateItems(items.filter((_, i) => i !== index));
   };
 
   const addItem = () => {
-    setItems((prev) => [
-      ...prev,
-      { icon: "Compass", title: "New Service", copy: "Service description" },
-    ]);
+    updateItems([...items, { icon: "Compass", title: "New Service", copy: "Service description" }]);
   };
 
   return (
@@ -304,8 +293,8 @@ function ServicesEditor({ content, onChange }: { content: any; onChange: (data: 
             placeholder="Title"
             value={s.title}
             onChange={(e) =>
-              setItems((prev) =>
-                prev.map((item: any, idx: number) =>
+              updateItems(
+                items.map((item: any, idx: number) =>
                   idx === i ? { ...item, title: e.target.value } : item,
                 ),
               )
@@ -316,8 +305,8 @@ function ServicesEditor({ content, onChange }: { content: any; onChange: (data: 
             placeholder="Description"
             value={s.copy}
             onChange={(e) =>
-              setItems((prev) =>
-                prev.map((item: any, idx: number) =>
+              updateItems(
+                items.map((item: any, idx: number) =>
                   idx === i ? { ...item, copy: e.target.value } : item,
                 ),
               )
@@ -327,8 +316,10 @@ function ServicesEditor({ content, onChange }: { content: any; onChange: (data: 
           <Select
             value={SERVICE_ICONS.includes(s.icon) ? s.icon : ""}
             onValueChange={(value) =>
-              setItems((prev) =>
-                prev.map((item: any, idx: number) => (idx === i ? { ...item, icon: value } : item)),
+              updateItems(
+                items.map((item: any, idx: number) =>
+                  idx === i ? { ...item, icon: value } : item,
+                ),
               )
             }
           >
@@ -576,53 +567,43 @@ function TestimonialsEditor({
   content: any;
   onChange: (data: any) => void;
 }) {
-  const [items, setItems] = useState(
-    content?.quotes || [
-      {
-        quote:
-          "Placeholder testimonial — Khushi turned a vague idea into a brand our audience instantly recognised.",
-        name: "Client Name",
-        role: "Founder, Company",
-      },
-      {
-        quote:
-          "Placeholder testimonial — the social system she designed doubled how consistent our feed looks.",
-        name: "Client Name",
-        role: "Marketing Lead, Company",
-      },
-      {
-        quote:
-          "Placeholder testimonial — sharp strategy, fast execution, and files our team could actually use.",
-        name: "Client Name",
-        role: "Co-founder, Company",
-      },
-    ],
-  );
+  const items = getArrayContent(content?.quotes) ?? [
+    {
+      quote:
+        "Placeholder testimonial — Khushi turned a vague idea into a brand our audience instantly recognised.",
+      name: "Client Name",
+      role: "Founder, Company",
+    },
+    {
+      quote:
+        "Placeholder testimonial — the social system she designed doubled how consistent our feed looks.",
+      name: "Client Name",
+      role: "Marketing Lead, Company",
+    },
+    {
+      quote:
+        "Placeholder testimonial — sharp strategy, fast execution, and files our team could actually use.",
+      name: "Client Name",
+      role: "Co-founder, Company",
+    },
+  ];
 
-  useEffect(() => {
-    if (content?.quotes) setItems(content.quotes);
-  }, [content?.quotes]);
-
-  useEffect(() => {
-    onChange({ quotes: items });
-  }, [items]);
+  const updateItems = (nextItems: typeof items) => onChange({ quotes: nextItems });
 
   const moveItem = (index: number, direction: number) => {
-    setItems((prev) => {
-      const newItems = [...prev];
-      const newIndex = index + direction;
-      if (newIndex < 0 || newIndex >= newItems.length) return prev;
-      [newItems[index], newItems[newIndex]] = [newItems[newIndex], newItems[index]];
-      return newItems;
-    });
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= items.length) return;
+    const nextItems = [...items];
+    [nextItems[index], nextItems[newIndex]] = [nextItems[newIndex], nextItems[index]];
+    updateItems(nextItems);
   };
 
   const removeItem = (index: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
+    updateItems(items.filter((_, i) => i !== index));
   };
 
   const addItem = () => {
-    setItems((prev) => [...prev, { quote: "New testimonial", name: "Client Name", role: "Role" }]);
+    updateItems([...items, { quote: "New testimonial", name: "Client Name", role: "Role" }]);
   };
 
   return (
@@ -665,8 +646,8 @@ function TestimonialsEditor({
             placeholder="Quote"
             value={t.quote}
             onChange={(e) =>
-              setItems((prev) =>
-                prev.map((item: any, idx: number) =>
+              updateItems(
+                items.map((item: any, idx: number) =>
                   idx === i ? { ...item, quote: e.target.value } : item,
                 ),
               )
@@ -678,8 +659,8 @@ function TestimonialsEditor({
               placeholder="Name"
               value={t.name}
               onChange={(e) =>
-                setItems((prev) =>
-                  prev.map((item: any, idx: number) =>
+                updateItems(
+                  items.map((item: any, idx: number) =>
                     idx === i ? { ...item, name: e.target.value } : item,
                   ),
                 )
@@ -690,8 +671,8 @@ function TestimonialsEditor({
               placeholder="Role"
               value={t.role}
               onChange={(e) =>
-                setItems((prev) =>
-                  prev.map((item: any, idx: number) =>
+                updateItems(
+                  items.map((item: any, idx: number) =>
                     idx === i ? { ...item, role: e.target.value } : item,
                   ),
                 )
@@ -978,6 +959,11 @@ export default function AdminDashboard() {
   };
 
   const handleSave = async () => {
+    if (activeSection === "messages") {
+      toast.info("Messages are read-only in this view.");
+      return;
+    }
+
     if (activeSection && formData) {
       const sectionKey = activeSection as SectionName;
       await saveSection(sectionKey, formData);
@@ -1016,11 +1002,21 @@ export default function AdminDashboard() {
     toast.success("Downloaded content.json - place in public/ and redeploy");
   };
 
-  // Load form data when section changes
+  // Seed the form with server data before the editor mounts. Doing this in the
+  // click handler (instead of an effect) prevents editors from overwriting the
+  // fetched section with their local defaults on first render.
+  const openSection = (sectionId: string) => {
+    setActiveSection(sectionId);
+    setFormData(
+      sectionId === "messages" ? null : (supabaseContent[sectionId as SectionName] ?? null),
+    );
+  };
+
+  // Keep form data in sync with server-side/realtime updates, except for
+  // messages which are fetched separately from their own table.
   useEffect(() => {
-    if (activeSection && supabaseContent) {
-      setFormData(supabaseContent[activeSection as SectionName]);
-    }
+    if (!activeSection || activeSection === "messages") return;
+    setFormData(supabaseContent[activeSection as SectionName] ?? null);
   }, [activeSection, supabaseContent]);
 
   // Subscribe to real-time changes from other admin sessions
@@ -1038,21 +1034,40 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (activeSection !== "messages") return;
 
-    fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/messages`, {
-      headers: {
-        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Fetched messages:", data);
-        setFormData(data);
-      })
-      .catch((err) => {
+    let cancelled = false;
+
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/messages`, {
+          headers: {
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch messages (${res.status})`);
+        }
+
+        const data = await res.json();
+        if (!cancelled) {
+          setFormData(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
         console.error("Failed to fetch messages:", err);
-      });
+        if (!cancelled) {
+          setFormData([]);
+          toast.error(err instanceof Error ? err.message : "Failed to fetch messages");
+        }
+      }
+    };
+
+    fetchMessages();
+
+    return () => {
+      cancelled = true;
+    };
   }, [activeSection]);
 
   if (!loggedIn) {
@@ -1118,7 +1133,7 @@ export default function AdminDashboard() {
                     "w-full justify-start gap-3",
                     activeSection === section.id && "bg-primary text-primary-foreground",
                   )}
-                  onClick={() => setActiveSection(section.id)}
+                  onClick={() => openSection(section.id)}
                   disabled={saving[section.id as SectionName]}
                 >
                   <span>{section.title}</span>
@@ -1212,7 +1227,7 @@ export default function AdminDashboard() {
                     <Card
                       key={section.id}
                       className="p-4 cursor-pointer hover:bg-accent transition-colors"
-                      onClick={() => setActiveSection(section.id)}
+                      onClick={() => openSection(section.id)}
                     >
                       <CardTitle className="text-sm">{section.title}</CardTitle>
                       <p className="text-xs text-muted-foreground mt-1">{section.desc}</p>
