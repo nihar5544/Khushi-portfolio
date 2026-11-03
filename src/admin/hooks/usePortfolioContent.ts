@@ -222,12 +222,13 @@ export function usePortfolioContent(): UsePortfolioContentReturn {
 
       setContent(merged);
     } catch (err) {
-      // Fallback to defaults if Supabase unavailable
-      console.warn("Supabase fetch failed, using defaults:", err);
+      const message = err instanceof Error ? err.message : "Failed to fetch content";
+      console.error("Supabase fetch failed:", err);
+      // Keep defaults so the editors still render, but surface the failure
+      // instead of silently presenting static content as if it came from the API.
       setContent({ ...DEFAULT_CONTENT });
-      // Don't set error - silently fallback for better UX
-      // setError(err instanceof Error ? err.message : 'Failed to fetch content');
-      // toast.error(message);
+      setError(message);
+      toast.error(`Could not load content from the server: ${message}`);
     } finally {
       setLoading(false);
     }
