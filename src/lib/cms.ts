@@ -9,6 +9,7 @@ const DEFAULT_CONTENT = {
       "I build brands that stop the scroll. Brand strategy, identity, social media and UI design for founders who refuse to blend in.",
     ctaText: "View My Work",
     secondaryCtaText: "Let's Collaborate",
+    heroImage: "/hero-portrait.png",
   },
   about: {
     description1:
@@ -128,7 +129,7 @@ const DEFAULT_CONTENT = {
   socialLinks: [
     {
       icon: "Mail",
-      href: "mailto:rawatkhushi2910@gmail.com",
+      href: "rawatkhushi2910@gmail.com",
       label: "Email",
     },
     {

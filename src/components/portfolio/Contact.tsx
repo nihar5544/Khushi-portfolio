@@ -2,20 +2,66 @@ import { useState, type FormEvent } from "react";
 import { ArrowUpRight, Linkedin, Mail, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { Reveal } from "./Reveal";
+import axios from "axios";
 
-export function Contact() {
+// Map string icon names from Supabase to actual React components
+const iconMap: Record<string, React.ComponentType<{ size: number }>> = {
+  Mail,
+  Linkedin,
+  Phone,
+};
+
+interface ContactProps {
+  cms?: {
+    socialLinks?: Array<{ icon: string; href: string; label: string }>;
+  };
+}
+
+export function Contact({ cms }: ContactProps) {
   const [sending, setSending] = useState(false);
+  const socialLinks = cms?.socialLinks || [];
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => {
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const name = formData.get("name") as string;
+      const email = formData.get("email") as string;
+      const message = formData.get("message") as string;
+
+      // Save to Supabase via REST API
+      const res = await axios.post(
+        `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/messages`,
+        {
+          name,
+          email,
+          subject: "Portfolio Inquiry",
+          message,
+          read_status: false,
+        },
+        {
+          headers: {
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || "Failed to send message");
+      }
+
       setSending(false);
-      toast.success("Thanks! Your message is ready to send.", {
-        description: "Email delivery isn't wired up yet — reach me at rawatkhushi2910@gmail.com.",
-      });
-      e.currentTarget?.reset?.();
-    }, 600);
+      toast.success("Message sent! I'll get back to you soon.");
+      form?.reset?.();
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      toast.error("Failed to send message. Please try again.");
+    }
   };
 
   const field =
@@ -40,66 +86,44 @@ export function Contact() {
         <div className="mt-16 grid gap-14 md:grid-cols-2 md:gap-20">
           <Reveal variant="left" className="space-y-8">
             <div className="space-y-4">
-              <a
-                href="mailto:rawatkhushi2910@gmail.com"
-                className="group flex items-center gap-4 border-b border-ink-foreground/15 pb-4"
-              >
-                <Mail size={20} className="shrink-0 text-primary" />
-                <span className="min-w-0 truncate text-lg font-medium">
-                  rawatkhushi2910@gmail.com
-                </span>
-                <ArrowUpRight
-                  size={18}
-                  className="ml-auto shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
-                />
-              </a>
-              <a
-                href="tel:+916353561585"
-                className="group flex items-center gap-4 border-b border-ink-foreground/15 pb-4"
-              >
-                <Phone size={20} className="shrink-0 text-primary" />
-                <span className="text-lg font-medium">+91 63535 61585</span>
-                <ArrowUpRight
-                  size={18}
-                  className="ml-auto shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
-                />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/khushi-rawat-712290208/"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="group flex items-center gap-4 border-b border-ink-foreground/15 pb-4"
-              >
-                <Linkedin size={20} className="shrink-0 text-primary" />
-                <span className="text-lg font-medium">LinkedIn</span>
-                <ArrowUpRight
-                  size={18}
-                  className="ml-auto shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
-                />
-              </a>
+              {socialLinks.map((s: any) => {
+                const IconComponent = iconMap[s.icon] || Mail;
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    className="group flex items-center gap-4 border-b border-ink-foreground/15 pb-4"
+                  >
+                    <IconComponent size={20} className="shrink-0 text-primary" />
+                    <span className="min-w-0 truncate text-lg font-medium">{s.href}</span>
+                    <ArrowUpRight
+                      size={18}
+                      className="ml-auto shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                    />
+                  </a>
+                );
+              })}
             </div>
 
             <div className="flex flex-wrap gap-3">
-              {[
-                { icon: Mail, href: "mailto:rawatkhushi2910@gmail.com", label: "Email" },
-                {
-                  icon: Linkedin,
-                  href: "https://www.linkedin.com/in/khushi-rawat-712290208/",
-                  label: "LinkedIn",
-                },
-                { icon: Phone, href: "tel:+916353561585", label: "Phone" },
-              ].map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  target={s.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noreferrer noopener"
-                  className="grid size-12 place-items-center rounded-full border-2 border-ink-foreground/25 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:bg-primary hover:text-primary-foreground"
-                >
-                  <s.icon size={18} />
-                </a>
-              ))}
+              {socialLinks.map((s: any) => {
+                const IconComponent = iconMap[s.icon] || Mail;
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    aria-label={s.label}
+                    target={s.href.startsWith("http") ? "_blank" : undefined}
+                    rel="noreferrer noopener"
+                    className="group relative grid size-12 place-items-center rounded-full border-2 border-ink-foreground/25 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <IconComponent size={18} />
+                    <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-medium text-ink-foreground/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                      {s.href}
+                    </span>
+                  </a>
+                );
+              })}
             </div>
           </Reveal>
 

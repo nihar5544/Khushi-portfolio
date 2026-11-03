@@ -12,7 +12,7 @@ import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
 import { Marquee } from "@/components/portfolio/Marquee";
 import { CustomCursor } from "@/components/portfolio/CustomCursor";
-import { cms, cmsReady } from "@/lib/cms";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,24 +37,49 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [cmsData, setCmsData] = useState(cms.getState());
-  const [ready, setReady] = useState(false);
+  const { data: cmsData, loading, error, lastUpdated } = usePortfolioData();
 
-  useEffect(() => {
-    cmsReady.then(() => {
-      setReady(true);
-      setCmsData(cms.getState());
-      const unsubscribe = cms.subscribe(() => {
-        setCmsData(cms.getState());
-      });
-      return unsubscribe;
-    });
-  }, []);
-
-  if (!ready) {
+  // Show loading skeleton while fetching
+  if (loading) {
     return (
       <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading portfolio...</p>
+        </div>
+      </main>
+    );
+  }
+
+  // Error state with retry
+  if (error) {
+    return (
+      <main className="min-h-screen bg-background text-foreground flex items-center justify-center p-8">
+        <div className="text-center max-w-md">
+          <div className="text-red-500 mb-4">
+            <svg
+              className="mx-auto h-12 w-12"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold mb-2">Failed to load portfolio</h2>
+          <p className="text-muted-foreground mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       </main>
     );
   }
@@ -70,7 +95,7 @@ function Index() {
       <Marquee inverted speed={36} />
       <Process cms={cmsData.process} />
       <Testimonials cms={cmsData.testimonials} />
-      <Contact />
+      <Contact cms={{ socialLinks: cmsData.socialLinks }} />
       <Footer />
       <Toaster />
     </main>

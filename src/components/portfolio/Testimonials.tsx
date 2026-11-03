@@ -1,28 +1,19 @@
 import { Quote } from "lucide-react";
 import { Reveal } from "./Reveal";
 
-const QUOTES = [
-  {
-    quote:
-      "Placeholder testimonial — Khushi turned a vague idea into a brand our audience instantly recognised.",
-    name: "Client Name",
-    role: "Founder, Company",
-  },
-  {
-    quote:
-      "Placeholder testimonial — the social system she designed doubled how consistent our feed looks.",
-    name: "Client Name",
-    role: "Marketing Lead, Company",
-  },
-  {
-    quote:
-      "Placeholder testimonial — sharp strategy, fast execution, and files our team could actually use.",
-    name: "Client Name",
-    role: "Co-founder, Company",
-  },
-];
+type Testimonial = {
+  quote: string;
+  name: string;
+  role: string;
+};
 
-export function Testimonials() {
+type TestimonialsCMS = {
+  quotes?: Testimonial[];
+};
+
+export function Testimonials({ cms }: { cms?: TestimonialsCMS }) {
+  const quotes = cms?.quotes;
+
   return (
     <section className="mx-auto max-w-[1400px] px-5 py-24 md:px-8 md:py-36">
       <Reveal className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
@@ -38,7 +29,7 @@ export function Testimonials() {
       </Reveal>
 
       <div className="mt-16 grid gap-6 md:grid-cols-3">
-        {QUOTES.map((q, i) => (
+        {quotes?.map((q, i) => (
           <Reveal
             key={i}
             delay={i * 100}
