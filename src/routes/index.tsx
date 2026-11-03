@@ -91,7 +91,7 @@ function Index() {
       <Hero cms={cmsData.hero} />
       <About cms={cmsData.about} />
       <Services cms={cmsData.services} />
-      <Work cms={cmsData.projects} />
+      <Work cms={{ projects: cmsData.projects }} />
       <Marquee inverted speed={36} />
       <Process cms={cmsData.process} />
       <Testimonials cms={cmsData.testimonials} />
