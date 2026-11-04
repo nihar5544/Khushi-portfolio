@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { ArrowUpRight, Linkedin, Mail, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, Phone } from "lucide-react";
+import { Linkedin } from "@/lib/brand-icons";
 import { toast } from "sonner";
 import { Reveal } from "./Reveal";
 import axios from "axios";

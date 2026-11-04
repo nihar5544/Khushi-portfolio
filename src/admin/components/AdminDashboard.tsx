@@ -11,14 +11,8 @@ import {
   type SectionContentMap,
 } from "@/admin/hooks/usePortfolioContent";
 import { Save, Download, RefreshCw, RotateCcw } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { SERVICE_ICONS } from "@/lib/service-icons";
+import { ServiceIcon } from "@/components/portfolio/ServiceIcon";
+import { isKnownIconName, normalizeIconName } from "@/lib/service-icon";
 
 function useAdminAuth() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -255,87 +249,102 @@ function ServicesEditor({ content, onChange }: { content: any; onChange: (data: 
 
   return (
     <div className="space-y-4">
-      {items.map((s: any, i: number) => (
-        <div key={i} className="p-4 border rounded-lg bg-muted/50 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="font-medium">Service {i + 1}</span>
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => moveItem(i, -1)}
-                disabled={i === 0}
-                aria-label="Move up"
-              >
-                ↑
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => moveItem(i, 1)}
-                disabled={i === items.length - 1}
-                aria-label="Move down"
-              >
-                ↓
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => removeItem(i)}
-                className="text-red-500"
-                aria-label="Remove"
-              >
-                ×
-              </Button>
+      {items.map((s: any, i: number) => {
+        const iconName = normalizeIconName(s.icon);
+        const iconIsValid = isKnownIconName(s.icon);
+
+        return (
+          <div key={i} className="p-4 border rounded-lg bg-muted/50 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-medium">Service {i + 1}</span>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => moveItem(i, -1)}
+                  disabled={i === 0}
+                  aria-label="Move up"
+                >
+                  ↑
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => moveItem(i, 1)}
+                  disabled={i === items.length - 1}
+                  aria-label="Move down"
+                >
+                  ↓
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeItem(i)}
+                  className="text-red-500"
+                  aria-label="Remove"
+                >
+                  ×
+                </Button>
+              </div>
+            </div>
+            <Input
+              placeholder="Title"
+              value={s.title}
+              onChange={(e) =>
+                updateItems(
+                  items.map((item: any, idx: number) =>
+                    idx === i ? { ...item, title: e.target.value } : item,
+                  ),
+                )
+              }
+              className="w-full"
+            />
+            <Input
+              placeholder="Description"
+              value={s.copy}
+              onChange={(e) =>
+                updateItems(
+                  items.map((item: any, idx: number) =>
+                    idx === i ? { ...item, copy: e.target.value } : item,
+                  ),
+                )
+              }
+              className="w-full"
+            />
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border bg-background">
+                  <ServiceIcon name={s.icon} size={18} strokeWidth={1.75} />
+                </span>
+                <Input
+                  placeholder="Icon name — e.g. Rocket, FaceSlightlyFrowning or layout-grid"
+                  value={s.icon ?? ""}
+                  onChange={(e) =>
+                    updateItems(
+                      items.map((item: any, idx: number) =>
+                        idx === i ? { ...item, icon: e.target.value } : item,
+                      ),
+                    )
+                  }
+                  className="w-full"
+                  aria-invalid={!iconIsValid}
+                />
+              </div>
+              {iconIsValid ? (
+                <p className="text-xs text-muted-foreground">
+                  Using the icon <code className="font-mono">{iconName}</code>.
+                </p>
+              ) : (
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  Unknown icon name — a fallback icon is shown. Use any Lucide icon name, e.g.{" "}
+                  <code className="font-mono">Rocket</code> or{" "}
+                  <code className="font-mono">FaceSlightlyFrowning</code>.
+                </p>
+              )}
             </div>
           </div>
-          <Input
-            placeholder="Title"
-            value={s.title}
-            onChange={(e) =>
-              updateItems(
-                items.map((item: any, idx: number) =>
-                  idx === i ? { ...item, title: e.target.value } : item,
-                ),
-              )
-            }
-            className="w-full"
-          />
-          <Input
-            placeholder="Description"
-            value={s.copy}
-            onChange={(e) =>
-              updateItems(
-                items.map((item: any, idx: number) =>
-                  idx === i ? { ...item, copy: e.target.value } : item,
-                ),
-              )
-            }
-            className="w-full"
-          />
-          <Select
-            value={SERVICE_ICONS.includes(s.icon) ? s.icon : ""}
-            onValueChange={(value) =>
-              updateItems(
-                items.map((item: any, idx: number) =>
-                  idx === i ? { ...item, icon: value } : item,
-                ),
-              )
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose an icon" />
-            </SelectTrigger>
-            <SelectContent>
-              {SERVICE_ICONS.map((icon) => (
-                <SelectItem key={icon} value={icon}>
-                  {icon}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      ))}
+        );
+      })}
       <Button variant="outline" onClick={addItem} className="w-full">
         + Add Service
       </Button>
