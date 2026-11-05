@@ -31,6 +31,36 @@ export interface Database {
         };
         Relationships: [];
       };
+      messages: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          subject: string | null;
+          message: string;
+          read_status: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          subject?: string | null;
+          message: string;
+          read_status?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string;
+          subject?: string | null;
+          message?: string;
+          read_status?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
