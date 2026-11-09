@@ -1,34 +1,13 @@
-import { Compass, Fingerprint, Instagram, LayoutGrid, Layers, type LucideIcon } from "lucide-react";
 import { Reveal } from "./Reveal";
-import type { ServiceIconName } from "@/lib/service-icons";
+import { ServiceIcon } from "./ServiceIcon";
 
 type ServicesCMS = {
   items?: Array<{
-    icon: ServiceIconName | string;
+    icon: string;
     title: string;
     copy: string;
   }>;
 };
-
-const iconMap: Record<string, LucideIcon> = {
-  Compass,
-  Fingerprint,
-  Instagram,
-  LayoutGrid,
-  Layers,
-};
-
-/**
- * Resolve a CMS icon name defensively.
- * Content edited in the admin panel can contain any string (e.g. "Compass test"),
- * so always fall back to a valid icon instead of rendering `undefined`.
- */
-function resolveServiceIcon(name?: string): LucideIcon {
-  if (!name) return Compass;
-  const normalized = name.trim().toLowerCase();
-  const match = Object.keys(iconMap).find((key) => key.toLowerCase() === normalized);
-  return match ? iconMap[match] : Compass;
-}
 
 const DEFAULT_SERVICES = [
   {
@@ -78,7 +57,6 @@ export function Services({ cms }: { cms?: ServicesCMS }) {
 
         <div className="mt-16 grid gap-px overflow-hidden rounded-3xl bg-ink-foreground/15 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s, i) => {
-            const Icon = resolveServiceIcon(s.icon);
             return (
               <Reveal
                 key={`${s.title}-${i}`}
@@ -86,7 +64,8 @@ export function Services({ cms }: { cms?: ServicesCMS }) {
                 className="group relative bg-ink p-8 transition-colors duration-400 hover:bg-primary md:p-10"
               >
                 <div className="flex items-start justify-between">
-                  <Icon
+                  <ServiceIcon
+                    name={s.icon}
                     size={34}
                     strokeWidth={1.5}
                     className="text-primary transition-colors duration-300 group-hover:text-primary-foreground"

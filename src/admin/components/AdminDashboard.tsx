@@ -11,14 +11,9 @@ import {
   type SectionContentMap,
 } from "@/admin/hooks/usePortfolioContent";
 import { Save, Download, RefreshCw, RotateCcw } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { SERVICE_ICONS } from "@/lib/service-icons";
+import { ServiceIcon } from "@/components/portfolio/ServiceIcon";
+import { MessagesEditor } from "@/admin/components/MessagesEditor";
+import { isKnownIconName, normalizeIconName } from "@/lib/service-icon";
 
 function useAdminAuth() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -56,7 +51,7 @@ const sections = [
   { id: "testimonials", title: "Testimonials", desc: "3 client quotes" },
   { id: "navigation", title: "Navigation", desc: "Custom links" },
   { id: "socialLinks", title: "Social Links", desc: "Email, LinkedIn, Phone" },
-  { id: "messages", title: "Messages", desc: "Contact form submissions" },
+  { id: "messages", title: "Messages", desc: "Inbox — read, search and delete" },
 ];
 
 function HeroEditor({ content, onChange }: { content: any; onChange: (data: any) => void }) {
@@ -255,87 +250,102 @@ function ServicesEditor({ content, onChange }: { content: any; onChange: (data: 
 
   return (
     <div className="space-y-4">
-      {items.map((s: any, i: number) => (
-        <div key={i} className="p-4 border rounded-lg bg-muted/50 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="font-medium">Service {i + 1}</span>
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => moveItem(i, -1)}
-                disabled={i === 0}
-                aria-label="Move up"
-              >
-                ↑
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => moveItem(i, 1)}
-                disabled={i === items.length - 1}
-                aria-label="Move down"
-              >
-                ↓
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => removeItem(i)}
-                className="text-red-500"
-                aria-label="Remove"
-              >
-                ×
-              </Button>
+      {items.map((s: any, i: number) => {
+        const iconName = normalizeIconName(s.icon);
+        const iconIsValid = isKnownIconName(s.icon);
+
+        return (
+          <div key={i} className="p-4 border rounded-lg bg-muted/50 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-medium">Service {i + 1}</span>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => moveItem(i, -1)}
+                  disabled={i === 0}
+                  aria-label="Move up"
+                >
+                  ↑
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => moveItem(i, 1)}
+                  disabled={i === items.length - 1}
+                  aria-label="Move down"
+                >
+                  ↓
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeItem(i)}
+                  className="text-red-500"
+                  aria-label="Remove"
+                >
+                  ×
+                </Button>
+              </div>
+            </div>
+            <Input
+              placeholder="Title"
+              value={s.title}
+              onChange={(e) =>
+                updateItems(
+                  items.map((item: any, idx: number) =>
+                    idx === i ? { ...item, title: e.target.value } : item,
+                  ),
+                )
+              }
+              className="w-full"
+            />
+            <Input
+              placeholder="Description"
+              value={s.copy}
+              onChange={(e) =>
+                updateItems(
+                  items.map((item: any, idx: number) =>
+                    idx === i ? { ...item, copy: e.target.value } : item,
+                  ),
+                )
+              }
+              className="w-full"
+            />
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border bg-background">
+                  <ServiceIcon name={s.icon} size={18} strokeWidth={1.75} />
+                </span>
+                <Input
+                  placeholder="Icon name — e.g. Rocket, FaceSlightlyFrowning or layout-grid"
+                  value={s.icon ?? ""}
+                  onChange={(e) =>
+                    updateItems(
+                      items.map((item: any, idx: number) =>
+                        idx === i ? { ...item, icon: e.target.value } : item,
+                      ),
+                    )
+                  }
+                  className="w-full"
+                  aria-invalid={!iconIsValid}
+                />
+              </div>
+              {iconIsValid ? (
+                <p className="text-xs text-muted-foreground">
+                  Using the icon <code className="font-mono">{iconName}</code>.
+                </p>
+              ) : (
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  Unknown icon name — a fallback icon is shown. Use any Lucide icon name, e.g.{" "}
+                  <code className="font-mono">Rocket</code> or{" "}
+                  <code className="font-mono">FaceSlightlyFrowning</code>.
+                </p>
+              )}
             </div>
           </div>
-          <Input
-            placeholder="Title"
-            value={s.title}
-            onChange={(e) =>
-              updateItems(
-                items.map((item: any, idx: number) =>
-                  idx === i ? { ...item, title: e.target.value } : item,
-                ),
-              )
-            }
-            className="w-full"
-          />
-          <Input
-            placeholder="Description"
-            value={s.copy}
-            onChange={(e) =>
-              updateItems(
-                items.map((item: any, idx: number) =>
-                  idx === i ? { ...item, copy: e.target.value } : item,
-                ),
-              )
-            }
-            className="w-full"
-          />
-          <Select
-            value={SERVICE_ICONS.includes(s.icon) ? s.icon : ""}
-            onValueChange={(value) =>
-              updateItems(
-                items.map((item: any, idx: number) =>
-                  idx === i ? { ...item, icon: value } : item,
-                ),
-              )
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose an icon" />
-            </SelectTrigger>
-            <SelectContent>
-              {SERVICE_ICONS.map((icon) => (
-                <SelectItem key={icon} value={icon}>
-                  {icon}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      ))}
+        );
+      })}
       <Button variant="outline" onClick={addItem} className="w-full">
         + Add Service
       </Button>
@@ -773,45 +783,6 @@ function SocialLinksEditor({ content, onChange }: { content: any; onChange: (dat
   );
 }
 
-function MessagesEditor({ content, onChange }: { content: any; onChange: (data: any) => void }) {
-  const items = getArrayContent(content) ?? [];
-
-  return (
-    <div className="space-y-4">
-      {items.map((m: any, i: number) => (
-        <div key={i} className="p-4 border rounded-lg bg-muted/50 space-y-2">
-          <div>
-            <span className="text-sm font-medium">From: {m.name}</span>
-            <a href={`mailto:${m.email}`} className="text-primary hover:underline">
-              {m.email}
-            </a>
-          </div>
-          <p className="text-xs text-muted-foreground">{m.subject || "No subject"}</p>
-          <p className="text-sm">
-            {m.message?.substring(0, 100)}
-            {m.message?.length > 100 ? "..." : ""}
-          </p>
-          <div className="mt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                onChange(
-                  items.map((item: any, idx: number) =>
-                    idx === i ? { ...item, read_status: !item.read_status } : item,
-                  ),
-                )
-              }
-            >
-              {items[i]?.read_status ? "Unread" : "Mark Read"}
-            </Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function getEditorForSection(sectionId: string, content: any, onChange: (data: any) => void) {
   switch (sectionId) {
     case "hero":
@@ -831,7 +802,7 @@ function getEditorForSection(sectionId: string, content: any, onChange: (data: a
     case "socialLinks":
       return <SocialLinksEditor content={content} onChange={onChange} />;
     case "messages":
-      return <MessagesEditor content={content} onChange={onChange} />;
+      return <MessagesEditor />;
     default:
       return <p className="text-muted-foreground">Section not found</p>;
   }
@@ -883,42 +854,48 @@ function SectionEditor({
         <CardContent className="space-y-6">
           {getEditorForSection(sectionId, formData, onFormChange)}
         </CardContent>
-        <CardFooter className="flex gap-3">
+        <CardFooter className="flex flex-wrap items-center gap-3">
           <Button variant="ghost" onClick={onBack}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? (
-              <>
-                <svg
-                  className="mr-2 h-4 w-4 animate-spin"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </>
-            )}
-          </Button>
+          {sectionId === "messages" ? (
+            <p className="text-xs text-muted-foreground">
+              Read status and deletions are saved immediately — no save needed.
+            </p>
+          ) : (
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <svg
+                    className="mr-2 h-4 w-4 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>
@@ -959,11 +936,6 @@ export default function AdminDashboard() {
   };
 
   const handleSave = async () => {
-    if (activeSection === "messages") {
-      toast.info("Messages are read-only in this view.");
-      return;
-    }
-
     if (activeSection && formData) {
       const sectionKey = activeSection as SectionName;
       await saveSection(sectionKey, formData);
@@ -1029,46 +1001,6 @@ export default function AdminDashboard() {
       }
     });
   }, [activeSection, subscribeToChanges]);
-
-  // Fetch messages from Supabase when messages section is selected
-  useEffect(() => {
-    if (activeSection !== "messages") return;
-
-    let cancelled = false;
-
-    const fetchMessages = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/messages`, {
-          headers: {
-            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error(`Failed to fetch messages (${res.status})`);
-        }
-
-        const data = await res.json();
-        if (!cancelled) {
-          setFormData(Array.isArray(data) ? data : []);
-        }
-      } catch (err) {
-        console.error("Failed to fetch messages:", err);
-        if (!cancelled) {
-          setFormData([]);
-          toast.error(err instanceof Error ? err.message : "Failed to fetch messages");
-        }
-      }
-    };
-
-    fetchMessages();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [activeSection]);
 
   if (!loggedIn) {
     return (
