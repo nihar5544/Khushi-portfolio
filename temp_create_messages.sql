@@ -16,16 +16,15 @@ ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public can insert messages" ON messages
     FOR INSERT WITH CHECK (true);
 
--- Admins can read all messages
-CREATE POLICY "Admins can read messages" ON messages
-    FOR SELECT USING (
-        auth.role() = 'authenticated' 
-        AND auth.jwt() ->> 'email' = 'rawatkhushi2910@gmail.com'
-    );
+-- Public can read all messages
+-- (the admin panel uses the publishable/anon key, not a Supabase Auth session)
+CREATE POLICY "Public can read messages" ON messages
+    FOR SELECT TO anon, authenticated USING (true);
 
--- Admin can mark as read
+-- Admin panel can mark as read
 CREATE POLICY "Admin can update messages" ON messages
-    FOR UPDATE USING (
-        auth.role() = 'authenticated' 
-        AND auth.jwt() ->> 'email' = 'rawatkhushi2910@gmail.com'
-    );
+    FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+
+-- Admin panel can delete
+CREATE POLICY "Admin can delete messages" ON messages
+    FOR DELETE TO anon, authenticated USING (true);

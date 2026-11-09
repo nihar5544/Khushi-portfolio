@@ -94,8 +94,8 @@ export class MessageWriteBlockedError extends Error {
   constructor(action: "update" | "delete") {
     super(
       action === "delete"
-        ? "Supabase blocked the delete. Add a DELETE policy for the messages table to enable deleting from the admin panel."
-        : "Supabase blocked the update. Add an UPDATE policy for the messages table to change read status.",
+        ? "Supabase blocked the delete. Run fix_rls.sql in the Supabase SQL editor to allow message deletes for the anon role."
+        : "Supabase blocked the update. Run fix_rls.sql in the Supabase SQL editor to allow read-status updates for the anon role.",
     );
     this.name = "MessageWriteBlockedError";
   }
